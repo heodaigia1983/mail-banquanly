@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tra Cứu Mail BQL Sân Bay Phú Quốc</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Syne:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -80,10 +80,11 @@ body>*{position:relative;z-index:1}
   flex-shrink:0;
 }
 .hero-title{
-  font-family:'Syne',sans-serif;
-  font-size:clamp(18px,2.5vw,26px);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(22px,2.8vw,44px);
   font-weight:800;
-  line-height:1.2;
+  letter-spacing:0.05em;
+  line-height:1.15;
   background:linear-gradient(135deg,#fff 30%,var(--cyan));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
@@ -370,61 +371,115 @@ select.filter-select:focus{border-color:rgba(0,212,255,0.4)}
   flex-wrap:wrap;
   gap:12px;
 }
-.mail-grid{
+/* === BOARD TOP PANEL === */
+.board-top-panel{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(380px,1fr));
+  grid-template-columns:1fr 280px 200px;
   gap:16px;
+  margin-bottom:20px;
+  align-items:start;
 }
-@media(max-width:480px){.mail-grid{grid-template-columns:1fr}}
-.mail-card{
-  padding:18px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  transition:border-color .2s,transform .2s;
+@media(max-width:1100px){.board-top-panel{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.board-top-panel{grid-template-columns:1fr}}
+
+/* Mini Calendar */
+.mini-calendar{padding:16px 18px}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-month-name{font-size:13px;font-weight:700;color:#fff}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;text-align:center}
+.cal-dname{font-size:9px;color:var(--muted);padding:4px 0;font-weight:700;letter-spacing:.4px}
+.cal-d{
+  font-size:11px;color:#64748b;padding:5px 0;border-radius:5px;cursor:pointer;transition:all .15s;
+}
+.cal-d:hover{background:rgba(255,255,255,0.07);color:#cbd5e1}
+.cal-d.has-mail{color:var(--cyan);font-weight:700}
+.cal-d.today{background:var(--cyan)!important;color:#0a0e1a;font-weight:800;border-radius:7px}
+.cal-d.cal-active{background:rgba(0,212,255,0.18);color:var(--cyan);font-weight:800}
+.cal-d.other-m{color:rgba(100,116,139,0.3);cursor:default}
+
+/* Weather Widget */
+.weather-widget{padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.weather-city{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.7px}
+.weather-main{display:flex;align-items:center;gap:8px;margin:4px 0}
+.weather-icon{font-size:32px;line-height:1}
+.weather-temp{font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:800;color:#fff}
+.weather-desc{font-size:11px;color:#94a3b8;margin-top:2px}
+.weather-row{display:flex;gap:10px;flex-wrap:wrap}
+.weather-stat{font-size:10px;color:var(--muted)}
+
+/* === MAIL LIST (cuộn dọc) === */
+.mail-list{display:flex;flex-direction:column;gap:5px}
+
+/* Mỗi hàng mail */
+.mail-row{
+  padding:12px 16px 12px 20px;
+  display:flex;align-items:flex-start;gap:14px;
+  position:relative;
+  overflow:hidden;
+  transition:background .18s,border-color .18s;
   cursor:default;
 }
-.mail-card:hover{
-  border-color:rgba(0,212,255,0.25);
-  transform:translateY(-2px);
+/* thanh màu trái */
+.mail-row::before{
+  content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;
+  border-radius:0 2px 2px 0;background:rgba(255,255,255,0.08);
+  transition:background .18s,height .18s;
 }
-.mail-card-top{
-  display:flex;align-items:flex-start;justify-content:space-between;
-  gap:10px;
+.mail-row:hover{background:rgba(255,255,255,0.04)}
+.mail-row:hover::before{background:var(--muted);top:0;bottom:0}
+
+/* Mail mới (≤7 ngày) */
+.mail-row.is-new{border-color:rgba(0,212,255,0.2)}
+.mail-row.is-new::before{background:var(--cyan)}
+/* Mail cực mới / nóng (≤3 ngày) */
+.mail-row.is-hot{
+  border-color:rgba(245,158,11,0.28);
+  background:rgba(245,158,11,0.025);
+  box-shadow:inset 0 0 30px rgba(245,158,11,0.04);
 }
-.mail-stt{
-  font-size:11px;
-  color:var(--muted);
-  font-weight:600;
-  flex-shrink:0;
-  padding-top:1px;
+.mail-row.is-hot::before{background:linear-gradient(180deg,#f59e0b,#ef4444)}
+
+/* Badge MỚI */
+.new-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:1px 6px;border-radius:4px;
+  font-size:9px;font-weight:800;letter-spacing:.4px;white-space:nowrap;flex-shrink:0;
+  background:rgba(0,212,255,0.15);color:var(--cyan);border:1px solid rgba(0,212,255,0.3);
 }
-.mail-title{
-  font-size:14px;
-  font-weight:600;
-  color:#fff;
-  line-height:1.4;
-  overflow:hidden;
-  display:-webkit-box;
-  -webkit-line-clamp:1;
-  -webkit-box-orient:vertical;
-  flex:1;
+.hot-badge{background:rgba(245,158,11,0.15)!important;color:#f59e0b!important;border-color:rgba(245,158,11,0.35)!important}
+
+/* Body của row */
+.row-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.row-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.mail-stt{font-size:10px;color:var(--muted);font-weight:700;flex-shrink:0}
+.row-title{
+  font-size:13px;font-weight:600;color:#e2e8f0;line-height:1.4;
+  flex:1;min-width:160px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.mail-meta{
-  display:flex;align-items:center;gap:8px;
-  font-size:11px;
-  color:var(--muted);
+.mail-row.is-new .row-title{color:#cff6ff}
+.mail-row.is-hot .row-title{color:#fef3c7}
+.row-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.row-summary{
+  font-size:11.5px;color:#64748b;line-height:1.55;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.mail-meta svg{flex-shrink:0}
-.mail-summary{
-  font-size:12px;
-  color:#94a3b8;
-  line-height:1.5;
-  overflow:hidden;
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
+.mail-row.is-new .row-summary,.mail-row.is-hot .row-summary{color:#94a3b8}
+
+/* Actions col */
+.row-actions{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;min-width:96px}
+.row-date{font-size:10px;color:var(--muted);white-space:nowrap}
+
+/* Dev credit */
+.dev-credit{
+  text-align:center;padding:20px 0 12px;
+  font-size:11px;color:rgba(100,116,139,0.5);
+  border-top:1px solid rgba(255,255,255,0.04);
+  margin-top:8px;line-height:2;
 }
+.dev-credit strong{color:rgba(0,212,255,0.65)}
+.dev-credit a{color:rgba(0,212,255,0.4);text-decoration:none}
+.dev-credit a:hover{color:var(--cyan)}
 .tag-list{display:flex;flex-wrap:wrap;gap:4px}
 .tag{
   display:inline-flex;align-items:center;gap:3px;
@@ -871,25 +926,57 @@ select.filter-select:focus{border-color:rgba(0,212,255,0.4)}
 
   <!-- MAIL BOARD -->
   <div class="board-section">
-    <div class="board-header">
-      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff">Mail Intelligence Board</div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <div class="result-badge" id="boardBadge">0 mail</div>
+
+    <!-- Panel đầu bảng: tiêu đề + lịch tháng + thời tiết -->
+    <div class="board-top-panel">
+
+      <div class="glass" style="padding:18px 22px;display:flex;flex-direction:column;justify-content:space-between;gap:10px">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#fff">Mail Intelligence Board</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.6">
+            Danh sách email ban hành theo thời gian &middot; Mail mới được làm nổi bật
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div class="result-badge" id="boardBadge">0 mail</div>
+          <div style="font-size:11px;color:var(--muted)">
+            <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:var(--cyan);display:inline-block"></span>≤7 ngày</span>
+            &nbsp;
+            <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block"></span>≤3 ngày</span>
+          </div>
+        </div>
       </div>
+
+      <div class="glass mini-calendar" id="calendarWidget">
+        <div style="color:var(--muted);font-size:12px">Đang tải lịch...</div>
+      </div>
+
+      <div class="glass weather-widget" id="weatherWidget">
+        <div class="weather-city">🌏 Hồ Chí Minh</div>
+        <div style="color:var(--muted);font-size:12px">Đang tải thời tiết...</div>
+      </div>
+
     </div>
-    <div class="mail-grid" id="mailGrid">
-      <!-- populated by JS -->
-    </div>
+
+    <!-- Danh sách mail cuộn -->
+    <div class="mail-list" id="mailGrid"></div>
     <div class="pagination" id="pagination"></div>
   </div>
 
 </div><!-- /container -->
 
+<div class="dev-credit">
+  Phát triển bởi <strong>Lê Văn Thảo</strong> &nbsp;&middot;&nbsp;
+  <a href="tel:0566666847">05.666668.47</a> &nbsp;&middot;&nbsp;
+  PQIA T2 Project &nbsp;&middot;&nbsp; 2026
+</div>
+
 <script>
 // =============================================
 // DATA & STATE
 // =============================================
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/1gIOAMjsJTuEswpNB8vvnfo8V1VuA9mSc3aLOdUctSRw/export?format=csv&gid=215374791';
+const SHEET_ID = '1gIOAMjsJTuEswpNB8vvnfo8V1VuA9mSc3aLOdUctSRw';
+const SHEET_GID = '215374791';
 const PAGE_SIZE = 10;
 let allMails = [];
 let filteredMails = [];
@@ -900,68 +987,123 @@ let charts = {};
 let heatmapDateFilter = null;
 
 // =============================================
-// FALLBACK SAMPLE DATA (8 dòng dự án Phú Quốc T2)
+// STRATEGY 1 — Script-tag intercept (hoạt động từ file:// & mọi browser)
+// Google gviz luôn gọi google.visualization.Query.setResponse({...})
+// Ta định nghĩa hàm đó trước, dùng script tag để bypass CORS
 // =============================================
-function getSampleData() {
-  return [
-    {stt:'1',title:'CV số 01/2024/PQIA-T2 – Yêu cầu cung cấp bản vẽ shop drawing mái Zone A',summary:'Yêu cầu nhà thầu cung cấp bản vẽ shop drawing phần mái khu vực Zone A trước ngày 15/01/2024. Đính kèm: BV-MAI-ZA-REV0.pdf, SPEC-MAI-ZA.docx',date:'2024-01-08',time:'08:30',link:'',},
-    {stt:'2',title:'RE: Phản hồi quan trắc kết cấu thép tháng 01 – PQIA T2',summary:'Gửi kèm báo cáo quan trắc kết cấu thép tháng 01/2024. Một số vị trí chuyển vị vượt giới hạn cho phép, cần kiểm tra gấp. Deadline phản hồi: 20/01/2024. Đính kèm: QT-KC-T1.xlsx, QT-KC-T1-Photo.zip',date:'2024-01-12',time:'14:20',link:'',},
-    {stt:'3',title:'BBH số 05/2024 – Ban hành bộ hồ sơ thiết kế cửa kính facade Terminal 2',summary:'Ban hành chính thức bộ hồ sơ thiết kế cửa kính facade. Nhà thầu căn cứ hồ sơ này thi công. Đính kèm: FACADE-CK-REV2.pdf, FACADE-CK-CALC.pdf, FACADE-CK-SPEC.pdf',date:'2024-01-18',time:'09:00',link:'',},
-    {stt:'4',title:'Phụ lục hợp đồng số 03 – Điều chỉnh khối lượng lắp dựng kết cấu thép',summary:'Phụ lục điều chỉnh tăng khối lượng lắp dựng kết cấu thép zone B thêm 15%. Chậm nhất 25/01/2024 phải ký xác nhận. Đính kèm: PHULUC-03.pdf',date:'2024-01-20',time:'10:45',link:'',},
-    {stt:'5',title:'Gửi kèm biên bản nghiệm thu công tác sản xuất panel mái tháng 01',summary:'Biên bản nghiệm thu công tác sản xuất panel mái tại xưởng. Đính kèm: BBNT-PANEL-T1.pdf, PHOTO-PANEL-T1.jpg',date:'2024-01-25',time:'16:00',link:'',},
-    {stt:'6',title:'Yêu cầu gửi lại hồ sơ QA/QC vật tư nhôm – Zone C (lần 2)',summary:'Hồ sơ QA/QC vật tư nhôm gửi lần 1 chưa đầy đủ chứng chỉ vật liệu. Yêu cầu gửi lại đầy đủ trước 01/02/2024. Đính kèm: CHECKLIST-QAQC-AL.xlsx',date:'2024-01-28',time:'11:30',link:'',},
-    {stt:'7',title:'CV số 08/2024/PQIA-T2 – Thông báo điều chỉnh tiến độ lắp dựng tháng 02',summary:'Điều chỉnh tiến độ lắp dựng kết cấu thép do thời tiết xấu. Cập nhật baseline mới. Đính kèm: TIENDO-T2-UPDATE.xlsx, CPM-T2.pdf',date:'2024-02-01',time:'08:00',link:'',},
-    {stt:'8',title:'Khẩn: Xác nhận hạn thanh toán đợt 3 – Hợp đồng thi công PQIA T2',summary:'Đề nghị xác nhận thanh toán đợt 3 theo hợp đồng. Gấp, deadline ngày 10/02/2024. Đính kèm: THANHTOAN-DT3.pdf, KHOI-LUONG-DT3.xlsx',date:'2024-02-05',time:'09:15',link:'',},
-  ];
+function fetchGvizScript(timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('script-timeout'));
+    }, timeoutMs);
+
+    function cleanup() {
+      clearTimeout(timer);
+      try { document.head.removeChild(script); } catch(_) {}
+      // Phục hồi nếu google.visualization đã tồn tại từ trước
+      if (window.__gvizPrev !== undefined) {
+        window.google.visualization.Query.setResponse = window.__gvizPrev;
+        delete window.__gvizPrev;
+      }
+    }
+
+    // Đảm bảo namespace tồn tại
+    window.google = window.google || {};
+    window.google.visualization = window.google.visualization || {};
+    window.google.visualization.Query = window.google.visualization.Query || {};
+    window.__gvizPrev = window.google.visualization.Query.setResponse;
+
+    window.google.visualization.Query.setResponse = function(json) {
+      cleanup();
+      resolve({ via: 'gviz-script', json });
+    };
+
+    script.onerror = () => { cleanup(); reject(new Error('script-load-error')); };
+    script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}`;
+    document.head.appendChild(script);
+  });
 }
 
 // =============================================
-// CSV PARSER
+// STRATEGY 2 — fetch CSV export
 // =============================================
-function parseCSV(text) {
+function fetchCSV(timeoutMs) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+  return fetch(url, { signal: ctrl.signal })
+    .then(r => { clearTimeout(timer); if (!r.ok) throw new Error('csv-http-' + r.status); return r.text(); })
+    .then(text => { if (text.trim().startsWith('<!')) throw new Error('csv-got-html'); return { via: 'csv', text }; })
+    .catch(e => { clearTimeout(timer); throw e; });
+}
+
+// =============================================
+// STRATEGY 3 — fetch gviz JSON text (strip wrapper)
+// =============================================
+function fetchGvizText(timeoutMs) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}`;
+  return fetch(url, { signal: ctrl.signal })
+    .then(r => { clearTimeout(timer); if (!r.ok) throw new Error('gviz-http-' + r.status); return r.text(); })
+    .then(text => { if (text.trim().startsWith('<!')) throw new Error('gviz-got-html'); return { via: 'gviz-text', text }; })
+    .catch(e => { clearTimeout(timer); throw e; });
+}
+
+// =============================================
+// PARSERS
+// =============================================
+function parseGvizJson(json) {
+  if (json.status && json.status !== 'ok')
+    throw new Error('Sheets lỗi: ' + (json.errors?.[0]?.detailed_message || json.status));
+  const rows = json.table?.rows || [];
+  return rows.map(row => {
+    const c = row.c || [];
+    const v = i => (c[i]?.v != null ? String(c[i].v) : '').trim();
+    return { stt: v(0), title: v(1), summary: v(2), date: parseDateGviz(c[3]?.v ? String(c[3].v) : ''), time: v(4), link: v(5) };
+  }).filter(r => r.title);
+}
+
+function parseGvizText(text) {
+  // Dải wrapper: /*O_o*/\ngoogle.visualization.Query.setResponse({...});
+  const s = text.indexOf('{'), e = text.lastIndexOf('}');
+  if (s === -1 || e === -1) throw new Error('gviz format lạ');
+  return parseGvizJson(JSON.parse(text.slice(s, e + 1)));
+}
+
+function parseCSVText(text) {
   const lines = text.split('\n');
   const result = [];
   for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    const cols = splitCSVLine(line);
-    if (cols.length < 4) continue;
+    const cols = splitCSV(lines[i].trim());
+    if (cols.length < 2 || !cols[1]) continue;
     result.push({
-      stt: (cols[0]||'').trim(),
-      title: (cols[1]||'').trim(),
-      summary: (cols[2]||'').trim(),
-      date: parseDate(cols[3]||''),
-      time: (cols[4]||'').trim(),
-      link: (cols[5]||'').trim(),
+      stt: cols[0].trim(), title: cols[1].trim(), summary: (cols[2]||'').trim(),
+      date: parseDateGviz(cols[3]||''), time: (cols[4]||'').trim(), link: (cols[5]||'').trim()
     });
   }
   return result;
 }
 
-function splitCSVLine(line) {
-  const result = [];
-  let cur = '';
-  let inQ = false;
+function splitCSV(line) {
+  const r = []; let cur = '', inQ = false;
   for (let i = 0; i < line.length; i++) {
     const c = line[i];
-    if (c === '"') {
-      if (inQ && line[i+1] === '"') { cur += '"'; i++; }
-      else inQ = !inQ;
-    } else if (c === ',' && !inQ) {
-      result.push(cur); cur = '';
-    } else cur += c;
+    if (c === '"') { if (inQ && line[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
+    else if (c === ',' && !inQ) { r.push(cur); cur = ''; }
+    else cur += c;
   }
-  result.push(cur);
-  return result;
+  r.push(cur); return r;
 }
 
-function parseDate(s) {
-  s = s.trim();
+function parseDateGviz(s) {
   if (!s) return '';
-  // dd/mm/yyyy
+  const dm = s.match(/Date\((\d+),(\d+),(\d+)\)/);
+  if (dm) return `${dm[1]}-${String(+dm[2]+1).padStart(2,'0')}-${String(+dm[3]).padStart(2,'0')}`;
   const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (m1) return `${m1[3]}-${m1[2].padStart(2,'0')}-${m1[1].padStart(2,'0')}`;
-  // yyyy-mm-dd
   const m2 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (m2) return `${m2[1]}-${m2[2]}-${m2[3]}`;
   return s;
@@ -1020,31 +1162,71 @@ function classifyMail(mail) {
 }
 
 // =============================================
-// FETCH + INIT
+// FETCH + INIT — race 3 chiến lược, cái nào xong trước thắng
 // =============================================
 async function loadData() {
   showLoading('Đang tải dữ liệu từ Google Sheets...');
-  let data = null;
-  let source = 'google';
+  const TIMEOUT = 10000;
+
+  let result = null;
   try {
-    const res = await fetch(CSV_URL, { mode: 'cors' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    const parsed = parseCSV(text);
-    if (parsed.length > 0) data = parsed;
-    else throw new Error('Empty');
-  } catch (e) {
-    source = 'sample';
-    data = getSampleData();
+    result = await Promise.any([
+      fetchGvizScript(TIMEOUT),
+      fetchCSV(TIMEOUT),
+      fetchGvizText(TIMEOUT),
+    ]);
+  } catch (_) {
+    // Tất cả 3 đều thất bại
   }
-  allMails = data.map(classifyMail);
-  document.getElementById('lastUpdate').textContent = new Date().toLocaleString('vi-VN');
-  document.getElementById('dataSourceBadge').textContent = source === 'google'
-    ? '✓ Dữ liệu từ Google Sheets'
-    : '⚠ Dữ liệu mẫu (CORS fallback)';
-  initFilters();
-  onFilterChange();
-  hideLoading();
+
+  if (!result) {
+    hideLoading();
+    showFetchError(
+      'Không thể tải dữ liệu sau 10 giây (đã thử 3 phương thức).\n' +
+      '→ Vui lòng đảm bảo sheet đã chia sẻ công khai:\n' +
+      '   Google Sheets → Chia sẻ → "Bất kỳ ai có đường liên kết" → Người xem'
+    );
+    return;
+  }
+
+  try {
+    let parsed;
+    if (result.via === 'gviz-script') parsed = parseGvizJson(result.json);
+    else if (result.via === 'csv')    parsed = parseCSVText(result.text);
+    else                              parsed = parseGvizText(result.text);
+
+    if (!parsed.length) throw new Error('Sheet không có dữ liệu (hàng 2 trở đi rỗng)');
+
+    allMails = parsed.map(classifyMail);
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleString('vi-VN');
+    document.getElementById('dataSourceBadge').textContent =
+      '✓ Google Sheets [' + result.via + '] — ' + allMails.length + ' mail';
+    initFilters();
+    onFilterChange();
+  } catch (e) {
+    showFetchError(e.message);
+  } finally {
+    hideLoading();
+  }
+}
+
+function showFetchError(msg) {
+  document.getElementById('kpiGrid').innerHTML = '';
+  document.getElementById('mailGrid').innerHTML = `
+    <div class="empty-state" style="grid-column:1/-1;padding:60px 20px;max-width:560px;margin:0 auto;text-align:center">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p style="color:#f87171;font-size:16px;font-weight:700;margin-top:12px">Không thể tải dữ liệu</p>
+      <p style="color:#94a3b8;font-size:13px;margin-top:8px;white-space:pre-line;line-height:1.7">${escHtml(msg)}</p>
+      <div style="margin-top:20px;padding:14px 18px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:10px;text-align:left;font-size:12px;color:#fbbf24;line-height:1.8">
+        <b>Cách kiểm tra quyền sheet:</b><br>
+        1. Mở Google Sheets → nút <b>Chia sẻ</b> (góc trên phải)<br>
+        2. Chọn <b>"Bất kỳ ai có đường liên kết"</b> → <b>Người xem</b><br>
+        3. Nhấn <b>Thử lại</b> bên dưới
+      </div>
+      <div class="btn btn-cyan" style="margin-top:16px;justify-content:center" onclick="reloadData()">↺ Thử lại</div>
+    </div>`;
+  document.getElementById('dataSourceBadge').textContent = '✗ Lỗi tải dữ liệu';
+  document.getElementById('lastUpdate').textContent = '—';
 }
 
 async function reloadData() {
@@ -1136,18 +1318,22 @@ function renderKPI() {
 // =============================================
 // MAIL GRID
 // =============================================
+// Thời gian ngưỡng "mới"
+function isHot(d) { if (!d) return false; return (Date.now() - new Date(d)) < 3*864e5; }
+function isNew(d)  { if (!d) return false; return (Date.now() - new Date(d)) < 7*864e5; }
+
 function renderMailGrid() {
   const start = (currentPage - 1) * PAGE_SIZE;
   const items = filteredMails.slice(start, start + PAGE_SIZE);
-  const grid = document.getElementById('mailGrid');
+  const list = document.getElementById('mailGrid');
   if (items.length === 0) {
-    grid.innerHTML = `<div class="empty-state">
+    list.innerHTML = `<div class="empty-state">
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><path d="m19 16 2 2 4-4"/></svg>
       <p>Không tìm thấy email phù hợp</p>
     </div>`;
     return;
   }
-  grid.innerHTML = items.map(m => renderMailCard(m)).join('');
+  list.innerHTML = items.map(m => renderMailRow(m)).join('');
 }
 
 function tagClass(tag) {
@@ -1171,41 +1357,47 @@ function fileIcon(fn) {
   return map[ext] || '📄';
 }
 
-function renderMailCard(m) {
-  const tags = m.tags.map(t => `<span class="tag ${tagClass(t)}">${t}</span>`).join('');
-  const visAttach = m.attachments.slice(0,3).map(f => `<span class="attach-chip">${fileIcon(f)} ${f.length>18?f.substring(0,18)+'…':f}</span>`).join('');
-  const moreAttach = m.attachments.length > 3 ? `<span class="more-chip">+${m.attachments.length-3}</span>` : '';
+function renderMailRow(m) {
+  const hot   = isHot(m.date);
+  const fresh = !hot && isNew(m.date);
+  const tags  = m.tags.map(t => `<span class="tag ${tagClass(t)}">${t}</span>`).join('');
   const dateStr = m.date ? m.date.split('-').reverse().join('/') : '—';
+  const visAttach = m.attachments.slice(0,4).map(f => `<span class="attach-chip">${fileIcon(f)} ${f.length>16?f.substring(0,16)+'…':f}</span>`).join('');
+  const moreAttach = m.attachments.length > 4 ? `<span class="more-chip">+${m.attachments.length-4}</span>` : '';
   const idx = allMails.indexOf(m);
+  const rowCls = hot ? 'is-hot' : fresh ? 'is-new' : '';
+  const summary = escHtml((m.summary||'').replace(/[Ðđ]ính kèm:[^\n]*/i,'').trim());
+
   return `
-  <div class="glass mail-card">
-    <div class="mail-card-top">
-      <div class="mail-stt">#${m.stt||'—'}</div>
-      <div class="mail-title">${escHtml(m.title)}</div>
-      <span class="priority-badge ${priorityClass(m.priority)}" style="flex-shrink:0">${m.priority}</span>
+  <div class="glass mail-row ${rowCls}">
+    <div class="row-body">
+      <div class="row-top">
+        ${hot   ? '<span class="new-badge hot-badge">🔥 MỚI</span>' : ''}
+        ${fresh ? '<span class="new-badge">✦ MỚI</span>' : ''}
+        <span class="mail-stt">#${m.stt||'—'}</span>
+        <div class="row-title" title="${escHtml(m.title)}">${escHtml(m.title)}</div>
+        <span class="priority-badge ${priorityClass(m.priority)}" style="flex-shrink:0">${m.priority}</span>
+        <span class="status-pill ${statusClass(m.status)}" style="flex-shrink:0">${m.status}</span>
+      </div>
+      <div class="row-meta">
+        <span>📅 ${dateStr}${m.time?' '+m.time:''}</span>
+        ${tags}
+        ${m.attachments.length ? `<span>📎 ${m.attachments.length} file</span>` : ''}
+      </div>
+      ${summary ? `<div class="row-summary">${summary}</div>` : ''}
+      ${m.attachments.length ? `<div class="attach-list" style="margin-top:2px">${visAttach}${moreAttach}</div>` : ''}
     </div>
-    <div class="mail-meta">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      ${dateStr}${m.time?' '+m.time:''}
-      &nbsp;·&nbsp;
-      <span class="status-pill ${statusClass(m.status)}">${m.status}</span>
-    </div>
-    <div class="mail-summary">${escHtml(m.summary.replace(/[Ðđ]ính kèm:[^\n]*/i,'').trim())}</div>
-    ${tags ? `<div class="tag-list">${tags}</div>` : ''}
-    ${m.attachments.length ? `<div class="attach-list">${visAttach}${moreAttach}</div>` : ''}
-    <div class="mail-actions">
-      ${m.link ? `<div class="btn btn-sm" onclick="window.open('${escHtml(m.link)}','_blank')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Mở email
-      </div>` : '<div class="btn btn-sm" style="opacity:.35;cursor:not-allowed">Mở email</div>'}
+    <div class="row-actions">
+      <div class="row-date">${dateStr}</div>
       <div class="btn btn-sm btn-cyan" onclick="openModal(${idx})">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         Chi tiết
       </div>
-      <div class="btn btn-sm" onclick="copyText('${escAttr(m.summary)}')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        Copy
-      </div>
+      ${m.link ? `<div class="btn btn-sm" onclick="window.open('${escHtml(m.link)}','_blank')">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Gmail
+      </div>` : ''}
+      <div class="btn btn-sm" onclick="copyText('${escAttr(m.summary)}')">Copy</div>
     </div>
   </div>`;
 }
