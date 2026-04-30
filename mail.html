@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tra Cứu Mail BQL Sân Bay Phú Quốc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e1a;
+  --cyan:#00d4ff;
+  --violet:#7c3aed;
+  --text:#e2e8f0;
+  --muted:#64748b;
+  --card-bg:rgba(255,255,255,0.04);
+  --card-border:rgba(255,255,255,0.08);
+  --radius-card:16px;
+  --radius-btn:12px;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'IBM Plex Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+/* mesh gradient background */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(124,58,237,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(0,212,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 60% 10%, rgba(124,58,237,0.06) 0%, transparent 50%);
+  pointer-events:none;
+  z-index:0;
+}
+body>*{position:relative;z-index:1}
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:rgba(255,255,255,0.02)}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:3px}
+
+/* === GLASS CARD === */
+.glass{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-radius:var(--radius-card);
+}
+
+/* === LAYOUT === */
+.container{max-width:1440px;margin:0 auto;padding:0 24px}
+.section{padding:24px 0}
+
+/* === HERO === */
+.hero{
+  padding:32px 0 24px;
+  border-bottom:1px solid var(--card-border);
+}
+.hero-inner{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.hero-left{display:flex;align-items:flex-start;gap:16px}
+.hero-icon{
+  width:52px;height:52px;
+  background:linear-gradient(135deg,var(--violet),var(--cyan));
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.hero-title{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(18px,2.5vw,26px);
+  font-weight:800;
+  line-height:1.2;
+  background:linear-gradient(135deg,#fff 30%,var(--cyan));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:6px;
+  max-width:560px;
+  line-height:1.5;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:10px;
+  padding:4px 12px;
+  background:rgba(0,212,255,0.1);
+  border:1px solid rgba(0,212,255,0.25);
+  border-radius:20px;
+  font-size:11px;
+  color:var(--cyan);
+  font-weight:600;
+  letter-spacing:.5px;
+}
+.hero-right{
+  display:flex;flex-direction:column;align-items:flex-end;gap:10px;
+  flex-shrink:0;
+}
+.update-time{
+  font-size:12px;
+  color:var(--muted);
+  text-align:right;
+}
+.update-time span{color:var(--cyan);font-weight:600}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 16px;
+  border:1px solid var(--card-border);
+  border-radius:var(--radius-btn);
+  background:var(--card-bg);
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all .2s;
+  white-space:nowrap;
+}
+.btn:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2)}
+.btn-cyan{
+  background:rgba(0,212,255,0.12);
+  border-color:rgba(0,212,255,0.3);
+  color:var(--cyan);
+}
+.btn-cyan:hover{background:rgba(0,212,255,0.2)}
+.btn-sm{padding:6px 12px;font-size:12px}
+
+/* === KPI CARDS === */
+.kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:16px;
+  padding:24px 0;
+}
+@media(max-width:1024px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.kpi-card{
+  padding:20px;
+  border-left:3px solid var(--cyan);
+  position:relative;
+  overflow:hidden;
+}
+.kpi-card:nth-child(2){border-left-color:#f59e0b}
+.kpi-card:nth-child(3){border-left-color:#10b981}
+.kpi-card:nth-child(4){border-left-color:var(--cyan)}
+.kpi-card:nth-child(5){border-left-color:var(--violet)}
+.kpi-card::after{
+  content:'';
+  position:absolute;
+  right:-20px;top:-20px;
+  width:80px;height:80px;
+  background:currentColor;
+  opacity:.03;
+  border-radius:50%;
+}
+.kpi-icon{
+  width:36px;height:36px;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:12px;
+}
+.kpi-num{
+  font-family:'Syne',sans-serif;
+  font-size:32px;
+  font-weight:800;
+  color:#fff;
+  line-height:1;
+}
+.kpi-label{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+  font-weight:500;
+}
+.kpi-change{
+  font-size:11px;
+  margin-top:6px;
+  display:inline-flex;align-items:center;gap:3px;
+}
+
+/* === FILTER BAR === */
+.filter-bar{
+  padding:20px;
+  margin-bottom:24px;
+}
+.filter-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.search-wrap{
+  flex:1;
+  min-width:240px;
+  position:relative;
+}
+.search-wrap svg{
+  position:absolute;
+  left:14px;top:50%;transform:translateY(-50%);
+  color:var(--muted);
+}
+.search-input{
+  width:100%;
+  padding:10px 14px 10px 44px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius-btn);
+  color:var(--text);
+  font-family:inherit;
+  font-size:14px;
+  outline:none;
+  transition:border-color .2s;
+}
+.search-input::placeholder{color:var(--muted)}
+.search-input:focus{border-color:rgba(0,212,255,0.4)}
+select.filter-select{
+  padding:9px 32px 9px 12px;
+  background:rgba(255,255,255,0.05) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+  border:1px solid var(--card-border);
+  border-radius:var(--radius-btn);
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+  cursor:pointer;
+  outline:none;
+  appearance:none;
+  -webkit-appearance:none;
+  min-width:130px;
+}
+select.filter-select:focus{border-color:rgba(0,212,255,0.4)}
+.result-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;
+  background:rgba(0,212,255,0.1);
+  border:1px solid rgba(0,212,255,0.2);
+  border-radius:20px;
+  font-size:12px;
+  color:var(--cyan);
+  font-weight:600;
+  white-space:nowrap;
+}
+
+/* === CHARTS GRID === */
+.charts-section{padding:24px 0}
+.charts-title{
+  font-family:'Syne',sans-serif;
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:16px;
+  color:#fff;
+}
+.charts-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+@media(max-width:900px){.charts-grid{grid-template-columns:1fr}}
+.chart-card{padding:20px}
+.chart-card-full{grid-column:1/-1}
+.chart-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.chart-title{
+  font-size:14px;
+  font-weight:600;
+  color:#cbd5e1;
+}
+.chart-badge{
+  font-size:11px;
+  padding:3px 8px;
+  border-radius:6px;
+  background:rgba(124,58,237,0.2);
+  color:#a78bfa;
+  border:1px solid rgba(124,58,237,0.3);
+}
+.chart-container{width:100%}
+
+/* Update Burden Index */
+.burden-list{display:flex;flex-direction:column;gap:12px}
+.burden-item{display:flex;flex-direction:column;gap:6px}
+.burden-header{display:flex;align-items:center;justify-content:space-between}
+.burden-name{font-size:13px;font-weight:500;color:#cbd5e1}
+.burden-score{font-size:13px;font-weight:700;color:var(--cyan)}
+.burden-bar-track{
+  height:6px;
+  background:rgba(255,255,255,0.06);
+  border-radius:3px;
+  overflow:hidden;
+}
+.burden-bar-fill{
+  height:100%;
+  border-radius:3px;
+  transition:width .8s ease;
+  background:linear-gradient(90deg,var(--violet),var(--cyan));
+}
+.burden-warning{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;
+  color:#fbbf24;
+  padding:2px 6px;
+  background:rgba(251,191,36,0.1);
+  border-radius:4px;
+  border:1px solid rgba(251,191,36,0.2);
+}
+
+/* Drawing Rework Table */
+.rework-table{width:100%;border-collapse:collapse;font-size:12px}
+.rework-table th{
+  padding:8px 12px;
+  text-align:left;
+  color:var(--muted);
+  font-weight:600;
+  border-bottom:1px solid var(--card-border);
+  cursor:pointer;
+  user-select:none;
+  white-space:nowrap;
+}
+.rework-table th:hover{color:var(--cyan)}
+.rework-table td{
+  padding:8px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  color:#cbd5e1;
+}
+.rework-table tr:hover td{background:rgba(255,255,255,0.03)}
+.priority-badge{
+  display:inline-block;
+  padding:2px 8px;
+  border-radius:4px;
+  font-size:11px;
+  font-weight:600;
+}
+.p-high{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.25)}
+.p-mid{background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.25)}
+.p-low{background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.25)}
+.status-pill{
+  display:inline-block;
+  padding:2px 8px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:500;
+}
+.s-phan-hoi{background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.2)}
+.s-dang-xu-ly{background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.2)}
+.s-da-luu{background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.2)}
+.s-chua{background:rgba(100,116,139,0.15);color:#94a3b8;border:1px solid rgba(100,116,139,0.2)}
+.s-dong{background:rgba(124,58,237,0.12);color:#a78bfa;border:1px solid rgba(124,58,237,0.2)}
+
+/* === MAIL BOARD === */
+.board-section{padding:24px 0}
+.board-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.mail-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(380px,1fr));
+  gap:16px;
+}
+@media(max-width:480px){.mail-grid{grid-template-columns:1fr}}
+.mail-card{
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  transition:border-color .2s,transform .2s;
+  cursor:default;
+}
+.mail-card:hover{
+  border-color:rgba(0,212,255,0.25);
+  transform:translateY(-2px);
+}
+.mail-card-top{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:10px;
+}
+.mail-stt{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:600;
+  flex-shrink:0;
+  padding-top:1px;
+}
+.mail-title{
+  font-size:14px;
+  font-weight:600;
+  color:#fff;
+  line-height:1.4;
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:1;
+  -webkit-box-orient:vertical;
+  flex:1;
+}
+.mail-meta{
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;
+  color:var(--muted);
+}
+.mail-meta svg{flex-shrink:0}
+.mail-summary{
+  font-size:12px;
+  color:#94a3b8;
+  line-height:1.5;
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+}
+.tag-list{display:flex;flex-wrap:wrap;gap:4px}
+.tag{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:2px 8px;
+  border-radius:4px;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.3px;
+}
+.tag-cv{background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.25)}
+.tag-kyt{background:rgba(0,212,255,0.12);color:var(--cyan);border:1px solid rgba(0,212,255,0.2)}
+.tag-hs{background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.2)}
+.tag-ph{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.25)}
+.tag-hd{background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.2)}
+.tag-khan{background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.35);animation:pulseTag 2s infinite}
+@keyframes pulseTag{0%,100%{opacity:1}50%{opacity:.6}}
+.attach-list{display:flex;flex-wrap:wrap;gap:4px}
+.attach-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:6px;
+  font-size:10px;
+  color:#94a3b8;
+}
+.more-chip{
+  font-size:10px;
+  color:var(--muted);
+  padding:2px 6px;
+  border-radius:6px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);
+}
+.mail-actions{
+  display:flex;align-items:center;gap:8px;
+  padding-top:4px;
+  border-top:1px solid rgba(255,255,255,0.05);
+}
+.mail-actions .btn{flex:1;justify-content:center}
+
+/* === PAGINATION === */
+.pagination{
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;
+  padding:24px 0;
+  flex-wrap:wrap;
+}
+.page-btn{
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:10px;
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  color:var(--text);
+  cursor:pointer;
+  font-size:13px;
+  font-weight:500;
+  transition:all .2s;
+}
+.page-btn:hover,.page-btn.active{
+  background:rgba(0,212,255,0.15);
+  border-color:rgba(0,212,255,0.35);
+  color:var(--cyan);
+}
+.page-btn.active{font-weight:700}
+
+/* === MODAL === */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(6px);
+  z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  width:100%;max-width:640px;
+  max-height:90vh;
+  overflow-y:auto;
+  background:#111827;
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:20px;
+  padding:28px;
+  position:relative;
+  transform:translateY(20px);
+  transition:transform .25s;
+}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  width:32px;height:32px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--muted);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.modal-close:hover{background:rgba(255,255,255,0.12);color:#fff}
+.modal-title{
+  font-family:'Syne',sans-serif;
+  font-size:18px;
+  font-weight:700;
+  color:#fff;
+  padding-right:44px;
+  line-height:1.4;
+  margin-bottom:16px;
+}
+.modal-meta{
+  display:flex;align-items:center;gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+  padding:12px 16px;
+  background:rgba(255,255,255,0.03);
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.modal-meta-item{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;
+  color:#94a3b8;
+}
+.modal-meta-item strong{color:var(--cyan)}
+.modal-section{margin-bottom:20px}
+.modal-section-title{
+  font-size:12px;
+  font-weight:600;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  margin-bottom:8px;
+}
+.modal-summary{
+  font-size:14px;
+  color:#cbd5e1;
+  line-height:1.7;
+  white-space:pre-wrap;
+}
+.attach-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:8px;
+  margin-bottom:6px;
+}
+.attach-icon{
+  width:32px;height:32px;
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  font-size:10px;
+  font-weight:700;
+}
+.attach-name{font-size:13px;color:#cbd5e1}
+.suggestions{display:flex;flex-direction:column;gap:8px}
+.suggestion-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;
+  background:rgba(124,58,237,0.08);
+  border:1px solid rgba(124,58,237,0.2);
+  border-radius:10px;
+  font-size:13px;
+  color:#c4b5fd;
+}
+.modal-footer{
+  display:flex;gap:10px;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  flex-wrap:wrap;
+}
+.modal-footer .btn{flex:1;min-width:120px;justify-content:center}
+
+/* === TOAST === */
+.toast{
+  position:fixed;bottom:28px;right:28px;
+  padding:12px 20px;
+  background:#111827;
+  border:1px solid rgba(16,185,129,0.35);
+  border-radius:12px;
+  color:#34d399;
+  font-size:13px;
+  font-weight:500;
+  display:flex;align-items:center;gap:8px;
+  z-index:2000;
+  transform:translateY(20px);
+  opacity:0;
+  transition:all .3s;
+  pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* === LOADING === */
+.loading-overlay{
+  position:fixed;inset:0;
+  background:rgba(10,14,26,.9);
+  z-index:3000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;
+}
+.spinner{
+  width:48px;height:48px;
+  border:3px solid rgba(0,212,255,0.15);
+  border-top-color:var(--cyan);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--muted)}
+
+/* === EMPTY STATE === */
+.empty-state{
+  grid-column:1/-1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 20px;
+  gap:12px;
+  color:var(--muted);
+}
+.empty-state svg{opacity:.3}
+.empty-state p{font-size:14px}
+
+/* responsive tweaks */
+@media(max-width:768px){
+  .hero-inner{flex-direction:column}
+  .hero-right{align-items:flex-start}
+  .filter-row{flex-direction:column;align-items:stretch}
+  .search-wrap{min-width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Đang tải dữ liệu...</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+  <span id="toastMsg">Đã sao chép!</span>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal">
+    <div class="modal-close" onclick="closeModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91"/>
+            <path d="M21 15l-4.5-1.5L15 9l1.5-4.5L21 3l1.5 4.5L21 12l-4.5 1.5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="hero-title">TRA CỨU MAIL BAN QUẢN LÝ SÂN BAY PHÚ QUỐC</div>
+          <div class="hero-sub">Hệ thống tra cứu nhanh nội dung ban hành, công văn, phản hồi và hồ sơ email dự án</div>
+          <div class="hero-badge">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+            Phú Quốc International Airport — Terminal 2
+          </div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="update-time">Cập nhật lần cuối: <span id="lastUpdate">—</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div class="btn btn-cyan btn-sm" onclick="reloadData()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/></svg>
+            Làm mới dữ liệu
+          </div>
+        </div>
+        <div id="dataSourceBadge" style="font-size:11px;color:var(--muted)"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid" id="kpiGrid">
+    <!-- populated by JS -->
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="glass filter-bar">
+    <div class="filter-row">
+      <div class="search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" type="text" id="searchInput" placeholder="Tìm kiếm theo tiêu đề, nội dung, STT..." oninput="onFilterChange()">
+      </div>
+      <select class="filter-select glass" id="filterMonth" onchange="onFilterChange()">
+        <option value="">Tất cả tháng</option>
+      </select>
+      <select class="filter-select glass" id="filterStatus" onchange="onFilterChange()">
+        <option value="">Tất cả trạng thái</option>
+        <option value="Cần phản hồi">Cần phản hồi</option>
+        <option value="Đang xử lý">Đang xử lý</option>
+        <option value="Đã lưu hồ sơ">Đã lưu hồ sơ</option>
+        <option value="Chưa xử lý">Chưa xử lý</option>
+        <option value="Đã đóng">Đã đóng</option>
+      </select>
+      <select class="filter-select glass" id="filterGroup" onchange="onFilterChange()">
+        <option value="">Tất cả nhóm</option>
+        <option value="Công văn">Công văn</option>
+        <option value="Kỹ thuật">Kỹ thuật</option>
+        <option value="Hồ sơ">Hồ sơ</option>
+        <option value="Phản hồi">Phản hồi</option>
+        <option value="Hợp đồng">Hợp đồng</option>
+        <option value="Khẩn">Khẩn</option>
+      </select>
+      <select class="filter-select glass" id="filterPriority" onchange="onFilterChange()">
+        <option value="">Tất cả ưu tiên</option>
+        <option value="Cao">Cao</option>
+        <option value="Trung bình">Trung bình</option>
+        <option value="Thấp">Thấp</option>
+      </select>
+      <select class="filter-select glass" id="sortOrder" onchange="onFilterChange()">
+        <option value="desc">Mới nhất</option>
+        <option value="asc">Cũ nhất</option>
+      </select>
+      <div class="result-badge" id="resultBadge">0 kết quả</div>
+    </div>
+  </div>
+
+  <!-- CHARTS SECTION -->
+  <div class="charts-section">
+    <div class="charts-title">Phân tích & Thống kê</div>
+    <div class="charts-grid">
+
+      <!-- Chart 1: Update Burden Index -->
+      <div class="glass chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Update Burden Index — Top hạng mục</div>
+          <div class="chart-badge">KPI</div>
+        </div>
+        <div id="burdenList" class="burden-list"></div>
+      </div>
+
+      <!-- Chart 2: Bar top hạng mục -->
+      <div class="glass chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Top hạng mục cập nhật nhiều nhất</div>
+          <div class="chart-badge">Bar</div>
+        </div>
+        <div class="chart-container">
+          <div id="chart2" style="height:280px"></div>
+        </div>
+      </div>
+
+      <!-- Chart 3: Heatmap Calendar (full width) -->
+      <div class="glass chart-card chart-card-full">
+        <div class="chart-header">
+          <div class="chart-title">Heatmap Calendar — Mật độ mail theo ngày</div>
+          <div class="chart-badge">Heatmap</div>
+        </div>
+        <div class="chart-container">
+          <div id="chart3" style="height:160px"></div>
+        </div>
+      </div>
+
+      <!-- Chart 4: Stacked Bar -->
+      <div class="glass chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Phân bổ trạng thái theo hạng mục</div>
+          <div class="chart-badge">Stacked</div>
+        </div>
+        <div class="chart-container">
+          <div id="chart4" style="height:280px"></div>
+        </div>
+      </div>
+
+      <!-- Chart 5: Area trend -->
+      <div class="glass chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Xu hướng mail theo thời gian</div>
+          <div class="chart-badge">Area</div>
+        </div>
+        <div class="chart-container">
+          <div id="chart5" style="height:280px"></div>
+        </div>
+      </div>
+
+      <!-- Chart 6: Pareto -->
+      <div class="glass chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Pareto — Nhóm vấn đề lặp lại</div>
+          <div class="chart-badge">Pareto</div>
+        </div>
+        <div class="chart-container">
+          <div id="chart6" style="height:280px"></div>
+        </div>
+      </div>
+
+      <!-- Chart 7: Scatter Issue Matrix -->
+      <div class="glass chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Issue Matrix — Mức ảnh hưởng vs Tần suất</div>
+          <div class="chart-badge">Scatter</div>
+        </div>
+        <div class="chart-container">
+          <div id="chart7" style="height:280px"></div>
+        </div>
+      </div>
+
+      <!-- Chart 8: Drawing Rework Table (full width) -->
+      <div class="glass chart-card chart-card-full">
+        <div class="chart-header">
+          <div class="chart-title">Drawing Rework Tracker</div>
+          <div class="chart-badge">Table</div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="rework-table" id="reworkTable">
+            <thead>
+              <tr>
+                <th onclick="sortRework('name')">Mã / Hạng mục ↕</th>
+                <th onclick="sortRework('count')">Số lần ↕</th>
+                <th onclick="sortRework('last')">Lần gần nhất ↕</th>
+                <th onclick="sortRework('status')">Trạng thái ↕</th>
+                <th onclick="sortRework('priority')">Ưu tiên ↕</th>
+              </tr>
+            </thead>
+            <tbody id="reworkBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MAIL BOARD -->
+  <div class="board-section">
+    <div class="board-header">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff">Mail Intelligence Board</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div class="result-badge" id="boardBadge">0 mail</div>
+      </div>
+    </div>
+    <div class="mail-grid" id="mailGrid">
+      <!-- populated by JS -->
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// =============================================
+// DATA & STATE
+// =============================================
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/1gIOAMjsJTuEswpNB8vvnfo8V1VuA9mSc3aLOdUctSRw/export?format=csv&gid=215374791';
+const PAGE_SIZE = 10;
+let allMails = [];
+let filteredMails = [];
+let currentPage = 1;
+let reworkSortKey = 'count';
+let reworkSortDir = -1;
+let charts = {};
+let heatmapDateFilter = null;
+
+// =============================================
+// FALLBACK SAMPLE DATA (8 dòng dự án Phú Quốc T2)
+// =============================================
+function getSampleData() {
+  return [
+    {stt:'1',title:'CV số 01/2024/PQIA-T2 – Yêu cầu cung cấp bản vẽ shop drawing mái Zone A',summary:'Yêu cầu nhà thầu cung cấp bản vẽ shop drawing phần mái khu vực Zone A trước ngày 15/01/2024. Đính kèm: BV-MAI-ZA-REV0.pdf, SPEC-MAI-ZA.docx',date:'2024-01-08',time:'08:30',link:'',},
+    {stt:'2',title:'RE: Phản hồi quan trắc kết cấu thép tháng 01 – PQIA T2',summary:'Gửi kèm báo cáo quan trắc kết cấu thép tháng 01/2024. Một số vị trí chuyển vị vượt giới hạn cho phép, cần kiểm tra gấp. Deadline phản hồi: 20/01/2024. Đính kèm: QT-KC-T1.xlsx, QT-KC-T1-Photo.zip',date:'2024-01-12',time:'14:20',link:'',},
+    {stt:'3',title:'BBH số 05/2024 – Ban hành bộ hồ sơ thiết kế cửa kính facade Terminal 2',summary:'Ban hành chính thức bộ hồ sơ thiết kế cửa kính facade. Nhà thầu căn cứ hồ sơ này thi công. Đính kèm: FACADE-CK-REV2.pdf, FACADE-CK-CALC.pdf, FACADE-CK-SPEC.pdf',date:'2024-01-18',time:'09:00',link:'',},
+    {stt:'4',title:'Phụ lục hợp đồng số 03 – Điều chỉnh khối lượng lắp dựng kết cấu thép',summary:'Phụ lục điều chỉnh tăng khối lượng lắp dựng kết cấu thép zone B thêm 15%. Chậm nhất 25/01/2024 phải ký xác nhận. Đính kèm: PHULUC-03.pdf',date:'2024-01-20',time:'10:45',link:'',},
+    {stt:'5',title:'Gửi kèm biên bản nghiệm thu công tác sản xuất panel mái tháng 01',summary:'Biên bản nghiệm thu công tác sản xuất panel mái tại xưởng. Đính kèm: BBNT-PANEL-T1.pdf, PHOTO-PANEL-T1.jpg',date:'2024-01-25',time:'16:00',link:'',},
+    {stt:'6',title:'Yêu cầu gửi lại hồ sơ QA/QC vật tư nhôm – Zone C (lần 2)',summary:'Hồ sơ QA/QC vật tư nhôm gửi lần 1 chưa đầy đủ chứng chỉ vật liệu. Yêu cầu gửi lại đầy đủ trước 01/02/2024. Đính kèm: CHECKLIST-QAQC-AL.xlsx',date:'2024-01-28',time:'11:30',link:'',},
+    {stt:'7',title:'CV số 08/2024/PQIA-T2 – Thông báo điều chỉnh tiến độ lắp dựng tháng 02',summary:'Điều chỉnh tiến độ lắp dựng kết cấu thép do thời tiết xấu. Cập nhật baseline mới. Đính kèm: TIENDO-T2-UPDATE.xlsx, CPM-T2.pdf',date:'2024-02-01',time:'08:00',link:'',},
+    {stt:'8',title:'Khẩn: Xác nhận hạn thanh toán đợt 3 – Hợp đồng thi công PQIA T2',summary:'Đề nghị xác nhận thanh toán đợt 3 theo hợp đồng. Gấp, deadline ngày 10/02/2024. Đính kèm: THANHTOAN-DT3.pdf, KHOI-LUONG-DT3.xlsx',date:'2024-02-05',time:'09:15',link:'',},
+  ];
+}
+
+// =============================================
+// CSV PARSER
+// =============================================
+function parseCSV(text) {
+  const lines = text.split('\n');
+  const result = [];
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const cols = splitCSVLine(line);
+    if (cols.length < 4) continue;
+    result.push({
+      stt: (cols[0]||'').trim(),
+      title: (cols[1]||'').trim(),
+      summary: (cols[2]||'').trim(),
+      date: parseDate(cols[3]||''),
+      time: (cols[4]||'').trim(),
+      link: (cols[5]||'').trim(),
+    });
+  }
+  return result;
+}
+
+function splitCSVLine(line) {
+  const result = [];
+  let cur = '';
+  let inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (c === ',' && !inQ) {
+      result.push(cur); cur = '';
+    } else cur += c;
+  }
+  result.push(cur);
+  return result;
+}
+
+function parseDate(s) {
+  s = s.trim();
+  if (!s) return '';
+  // dd/mm/yyyy
+  const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m1) return `${m1[3]}-${m1[2].padStart(2,'0')}-${m1[1].padStart(2,'0')}`;
+  // yyyy-mm-dd
+  const m2 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m2) return `${m2[1]}-${m2[2]}-${m2[3]}`;
+  return s;
+}
+
+// =============================================
+// AUTO-CLASSIFICATION
+// =============================================
+function classifyMail(mail) {
+  const text = (mail.title + ' ' + mail.summary).toLowerCase();
+
+  // Tags
+  const tags = [];
+  if (/\bcv\b|công văn|số văn bản|\bbbh\b|\/cv-|\/bbh-/i.test(text)) tags.push('Công văn');
+  if (/phản hồi|reply|\bxác nhận\b|\bre:/i.test(text)) tags.push('Phản hồi');
+  if (/hồ sơ|tài liệu|đính kèm/i.test(text)) tags.push('Hồ sơ');
+  if (/bản vẽ|thiết kế|quan trắc|kết cấu|shop drawing|pqia|\bt2\b/i.test(text)) tags.push('Kỹ thuật');
+  if (/hợp đồng|phụ lục|thanh toán/i.test(text)) tags.push('Hợp đồng');
+  if (/gấp|khẩn|chậm nhất|deadline|urgent/i.test(text)) tags.push('Khẩn');
+
+  // Priority
+  let priority = 'Thấp';
+  if (/gấp|khẩn|chậm nhất|deadline|urgent|hợp đồng|chỉ đạo/.test(text)) priority = 'Cao';
+  else if (/kỹ thuật|bản vẽ|quan trắc|phản hồi|yêu cầu|xác nhận/.test(text)) priority = 'Trung bình';
+
+  // Status
+  let status = 'Chưa xử lý';
+  if (/phản hồi|xác nhận|yêu cầu gửi lại|chậm nhất/.test(text)) status = 'Cần phản hồi';
+  else if (/kiểm tra|xem xét|đang/.test(text)) status = 'Đang xử lý';
+  else if (/ban hành|gửi kèm/.test(text) && !/yêu cầu|xác nhận|phản hồi/.test(text)) status = 'Đã lưu hồ sơ';
+
+  // Attachments from summary
+  const attachments = [];
+  const m = mail.summary.match(/[Ðđ]ính kèm:\s*([^\n]+)/i);
+  if (m) {
+    m[1].split(',').forEach(f => {
+      const fn = f.trim();
+      if (fn) attachments.push(fn);
+    });
+  }
+
+  // Topic group for charts
+  let group = 'Khác';
+  if (/mái|panel|tấm lợp/.test(text)) group = 'Mái';
+  else if (/kết cấu thép|lắp dựng/.test(text)) group = 'Kết cấu thép';
+  else if (/quan trắc/.test(text)) group = 'Quan trắc';
+  else if (/hợp đồng|phụ lục|thanh toán/.test(text)) group = 'Hồ sơ hợp đồng';
+  else if (/shop drawing|bản vẽ/.test(text)) group = 'Bản vẽ shop';
+  else if (/vật tư|nhôm|vật liệu/.test(text)) group = 'Vật tư';
+  else if (/qa|qc|quality/.test(text)) group = 'QA/QC';
+  else if (/sản xuất|xưởng/.test(text)) group = 'Sản xuất';
+  else if (/facade|cửa kính/.test(text)) group = 'Facade';
+  else if (/tiến độ|baseline/.test(text)) group = 'Tiến độ';
+
+  return { ...mail, tags, priority, status, attachments, group };
+}
+
+// =============================================
+// FETCH + INIT
+// =============================================
+async function loadData() {
+  showLoading('Đang tải dữ liệu từ Google Sheets...');
+  let data = null;
+  let source = 'google';
+  try {
+    const res = await fetch(CSV_URL, { mode: 'cors' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const parsed = parseCSV(text);
+    if (parsed.length > 0) data = parsed;
+    else throw new Error('Empty');
+  } catch (e) {
+    source = 'sample';
+    data = getSampleData();
+  }
+  allMails = data.map(classifyMail);
+  document.getElementById('lastUpdate').textContent = new Date().toLocaleString('vi-VN');
+  document.getElementById('dataSourceBadge').textContent = source === 'google'
+    ? '✓ Dữ liệu từ Google Sheets'
+    : '⚠ Dữ liệu mẫu (CORS fallback)';
+  initFilters();
+  onFilterChange();
+  hideLoading();
+}
+
+async function reloadData() {
+  heatmapDateFilter = null;
+  await loadData();
+}
+
+// =============================================
+// FILTER & SORT
+// =============================================
+function initFilters() {
+  // Populate month filter
+  const months = new Set();
+  allMails.forEach(m => {
+    if (m.date && m.date.length >= 7) months.add(m.date.substring(0,7));
+  });
+  const sel = document.getElementById('filterMonth');
+  sel.innerHTML = '<option value="">Tất cả tháng</option>';
+  [...months].sort().reverse().forEach(mo => {
+    const [y,mn] = mo.split('-');
+    const opt = document.createElement('option');
+    opt.value = mo;
+    opt.textContent = `Tháng ${parseInt(mn)}/${y}`;
+    sel.appendChild(opt);
+  });
+}
+
+function onFilterChange() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const month = document.getElementById('filterMonth').value;
+  const status = document.getElementById('filterStatus').value;
+  const group = document.getElementById('filterGroup').value;
+  const priority = document.getElementById('filterPriority').value;
+  const sort = document.getElementById('sortOrder').value;
+
+  filteredMails = allMails.filter(m => {
+    if (q && !((m.title+m.summary+m.stt).toLowerCase().includes(q))) return false;
+    if (month && (!m.date || !m.date.startsWith(month))) return false;
+    if (status && m.status !== status) return false;
+    if (group && !m.tags.includes(group)) return false;
+    if (priority && m.priority !== priority) return false;
+    if (heatmapDateFilter && m.date !== heatmapDateFilter) return false;
+    return true;
+  });
+
+  filteredMails.sort((a,b) => {
+    const da = a.date+' '+(a.time||'');
+    const db = b.date+' '+(b.time||'');
+    return sort === 'asc' ? da.localeCompare(db) : db.localeCompare(da);
+  });
+
+  document.getElementById('resultBadge').textContent = filteredMails.length + ' kết quả';
+  document.getElementById('boardBadge').textContent = filteredMails.length + ' mail';
+  currentPage = 1;
+  renderKPI();
+  renderMailGrid();
+  renderPagination();
+  renderCharts();
+}
+
+// =============================================
+// KPI
+// =============================================
+function renderKPI() {
+  const data = filteredMails;
+  const total = data.length;
+  const needReply = data.filter(m => m.status === 'Cần phản hồi').length;
+  const hasAttach = data.filter(m => m.attachments.length > 0).length;
+  const technical = data.filter(m => m.tags.includes('Kỹ thuật')).length;
+  const contract = data.filter(m => m.tags.includes('Hợp đồng') || m.tags.includes('Công văn')).length;
+
+  const kpis = [
+    {icon:'📧',label:'Tổng mail ban hành',val:total,color:'var(--cyan)'},
+    {icon:'⚡',label:'Cần phản hồi',val:needReply,color:'#f59e0b'},
+    {icon:'📎',label:'Có file đính kèm',val:hasAttach,color:'#10b981'},
+    {icon:'⚙',label:'Mail kỹ thuật',val:technical,color:'var(--cyan)'},
+    {icon:'📋',label:'Công văn / Hợp đồng',val:contract,color:'var(--violet)'},
+  ];
+  const grid = document.getElementById('kpiGrid');
+  grid.innerHTML = kpis.map(k => `
+    <div class="glass kpi-card">
+      <div class="kpi-icon" style="background:${k.color}22;color:${k.color};font-size:18px">${k.icon}</div>
+      <div class="kpi-num">${k.val}</div>
+      <div class="kpi-label">${k.label}</div>
+    </div>
+  `).join('');
+}
+
+// =============================================
+// MAIL GRID
+// =============================================
+function renderMailGrid() {
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const items = filteredMails.slice(start, start + PAGE_SIZE);
+  const grid = document.getElementById('mailGrid');
+  if (items.length === 0) {
+    grid.innerHTML = `<div class="empty-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><path d="m19 16 2 2 4-4"/></svg>
+      <p>Không tìm thấy email phù hợp</p>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = items.map(m => renderMailCard(m)).join('');
+}
+
+function tagClass(tag) {
+  return {
+    'Công văn':'tag-cv','Kỹ thuật':'tag-kyt','Hồ sơ':'tag-hs',
+    'Phản hồi':'tag-ph','Hợp đồng':'tag-hd','Khẩn':'tag-khan'
+  }[tag] || 'tag-cv';
+}
+function statusClass(s) {
+  return {
+    'Cần phản hồi':'s-phan-hoi','Đang xử lý':'s-dang-xu-ly',
+    'Đã lưu hồ sơ':'s-da-luu','Chưa xử lý':'s-chua','Đã đóng':'s-dong'
+  }[s] || 's-chua';
+}
+function priorityClass(p) {
+  return {'Cao':'p-high','Trung bình':'p-mid','Thấp':'p-low'}[p]||'p-low';
+}
+function fileIcon(fn) {
+  const ext = fn.split('.').pop().toLowerCase();
+  const map = {pdf:'🔴',xlsx:'🟢',xls:'🟢',docx:'🔵',doc:'🔵',jpg:'🟡',jpeg:'🟡',png:'🟡',zip:'⚫',rar:'⚫'};
+  return map[ext] || '📄';
+}
+
+function renderMailCard(m) {
+  const tags = m.tags.map(t => `<span class="tag ${tagClass(t)}">${t}</span>`).join('');
+  const visAttach = m.attachments.slice(0,3).map(f => `<span class="attach-chip">${fileIcon(f)} ${f.length>18?f.substring(0,18)+'…':f}</span>`).join('');
+  const moreAttach = m.attachments.length > 3 ? `<span class="more-chip">+${m.attachments.length-3}</span>` : '';
+  const dateStr = m.date ? m.date.split('-').reverse().join('/') : '—';
+  const idx = allMails.indexOf(m);
+  return `
+  <div class="glass mail-card">
+    <div class="mail-card-top">
+      <div class="mail-stt">#${m.stt||'—'}</div>
+      <div class="mail-title">${escHtml(m.title)}</div>
+      <span class="priority-badge ${priorityClass(m.priority)}" style="flex-shrink:0">${m.priority}</span>
+    </div>
+    <div class="mail-meta">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      ${dateStr}${m.time?' '+m.time:''}
+      &nbsp;·&nbsp;
+      <span class="status-pill ${statusClass(m.status)}">${m.status}</span>
+    </div>
+    <div class="mail-summary">${escHtml(m.summary.replace(/[Ðđ]ính kèm:[^\n]*/i,'').trim())}</div>
+    ${tags ? `<div class="tag-list">${tags}</div>` : ''}
+    ${m.attachments.length ? `<div class="attach-list">${visAttach}${moreAttach}</div>` : ''}
+    <div class="mail-actions">
+      ${m.link ? `<div class="btn btn-sm" onclick="window.open('${escHtml(m.link)}','_blank')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Mở email
+      </div>` : '<div class="btn btn-sm" style="opacity:.35;cursor:not-allowed">Mở email</div>'}
+      <div class="btn btn-sm btn-cyan" onclick="openModal(${idx})">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Chi tiết
+      </div>
+      <div class="btn btn-sm" onclick="copyText('${escAttr(m.summary)}')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </div>
+    </div>
+  </div>`;
+}
+
+// =============================================
+// PAGINATION
+// =============================================
+function renderPagination() {
+  const total = Math.ceil(filteredMails.length / PAGE_SIZE);
+  const pag = document.getElementById('pagination');
+  if (total <= 1) { pag.innerHTML = ''; return; }
+  let html = '';
+  const makeBtn = (p, label, active) =>
+    `<div class="page-btn${active?' active':''}" onclick="goPage(${p})">${label}</div>`;
+  html += makeBtn(currentPage-1, '‹', false);
+  for (let p=1;p<=total;p++) {
+    if (p===1||p===total||Math.abs(p-currentPage)<=1) html+=makeBtn(p,p,p===currentPage);
+    else if (Math.abs(p-currentPage)===2) html+='<div class="page-btn" style="cursor:default;opacity:.4">…</div>';
+  }
+  html += makeBtn(currentPage+1, '›', false);
+  pag.innerHTML = html;
+}
+
+function goPage(p) {
+  const total = Math.ceil(filteredMails.length / PAGE_SIZE);
+  p = Math.max(1, Math.min(total, p));
+  if (p === currentPage) return;
+  currentPage = p;
+  renderMailGrid();
+  renderPagination();
+  window.scrollTo({top: document.getElementById('mailGrid').offsetTop - 20, behavior:'smooth'});
+}
+
+// =============================================
+// MODAL
+// =============================================
+function openModal(idx) {
+  const m = allMails[idx];
+  if (!m) return;
+  const suggestions = getSuggestions(m);
+  const dateStr = m.date ? m.date.split('-').reverse().join('/') : '—';
+  const attachHtml = m.attachments.map(f => `
+    <div class="attach-item">
+      <div class="attach-icon" style="background:rgba(0,212,255,0.1);color:var(--cyan);font-size:16px">${fileIcon(f)}</div>
+      <div class="attach-name">${escHtml(f)}</div>
+    </div>`).join('');
+  const suggestHtml = suggestions.map(s => `
+    <div class="suggestion-item">
+      <span style="font-size:16px">${s.icon}</span>
+      <span>${s.text}</span>
+    </div>`).join('');
+  const tagsHtml = m.tags.map(t=>`<span class="tag ${tagClass(t)}">${t}</span>`).join('');
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-title">${escHtml(m.title)}</div>
+    <div class="modal-meta">
+      <div class="modal-meta-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>&nbsp;<strong>${dateStr} ${m.time||''}</strong></div>
+      <div class="modal-meta-item">STT: <strong>${m.stt||'—'}</strong></div>
+      <div class="modal-meta-item">Ưu tiên: <strong><span class="priority-badge ${priorityClass(m.priority)}">${m.priority}</span></strong></div>
+      <div class="modal-meta-item">Trạng thái: <strong><span class="status-pill ${statusClass(m.status)}">${m.status}</span></strong></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">Tags</div>
+      <div class="tag-list" style="margin-bottom:4px">${tagsHtml||'<span style="color:var(--muted);font-size:12px">Không có tag</span>'}</div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">Nội dung tóm tắt</div>
+      <div class="modal-summary">${escHtml(m.summary)}</div>
+    </div>
+    ${m.attachments.length ? `<div class="modal-section"><div class="modal-section-title">File đính kèm (${m.attachments.length})</div>${attachHtml}</div>` : ''}
+    ${suggestHtml ? `<div class="modal-section"><div class="modal-section-title">Gợi ý hành động</div><div class="suggestions">${suggestHtml}</div></div>` : ''}
+    <div class="modal-footer">
+      ${m.link ? `<div class="btn btn-cyan" onclick="window.open('${escHtml(m.link)}','_blank')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Mở Gmail gốc
+      </div>` : ''}
+      <div class="btn" onclick="copyText('${escAttr(m.summary)}')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy tóm tắt
+      </div>
+      <div class="btn" onclick="closeModal()">Đóng</div>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function getSuggestions(m) {
+  const s = [];
+  if (m.tags.includes('Kỹ thuật')) s.push({icon:'⚙️',text:'Giao team kỹ thuật kiểm tra'});
+  if (m.status === 'Cần phản hồi') s.push({icon:'⏰',text:'Theo dõi hạn phản hồi'});
+  if (m.tags.includes('Hồ sơ')) s.push({icon:'🗂️',text:'Lưu hồ sơ dự án'});
+  if (m.tags.includes('QA/QC') || m.summary.toLowerCase().includes('qa')) s.push({icon:'✅',text:'Chuyển QA/QC kiểm tra'});
+  s.push({icon:'📊',text:'Cập nhật vào báo cáo tuần'});
+  return s;
+}
+
+// =============================================
+// CHARTS
+// =============================================
+function renderCharts() {
+  renderBurden();
+  renderChart2();
+  renderChart3();
+  renderChart4();
+  renderChart5();
+  renderChart6();
+  renderChart7();
+  renderReworkTable();
+}
+
+// Chart 1 — Burden Index
+function renderBurden() {
+  const groups = {};
+  filteredMails.forEach(m => {
+    const g = m.group;
+    if (!groups[g]) groups[g] = {updateCount:0,attachCount:0,overdueCount:0};
+    groups[g].updateCount++;
+    groups[g].attachCount += m.attachments.length;
+    if (m.status === 'Cần phản hồi') groups[g].overdueCount++;
+  });
+  const items = Object.entries(groups).map(([k,v]) => ({
+    name:k,
+    score: Math.round(v.updateCount * 2 + v.attachCount * 0.5 + v.overdueCount * 3)
+  })).sort((a,b)=>b.score-a.score).slice(0,8);
+  const max = items[0]?.score || 1;
+  const THRESHOLD = max * 0.6;
+  const html = items.map(it => `
+    <div class="burden-item">
+      <div class="burden-header">
+        <div class="burden-name">${it.name}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${it.score>=THRESHOLD ? '<span class="burden-warning">⚠ Cao</span>' : ''}
+          <div class="burden-score">${it.score}</div>
+        </div>
+      </div>
+      <div class="burden-bar-track">
+        <div class="burden-bar-fill" style="width:${Math.round(it.score/max*100)}%"></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('burdenList').innerHTML = html || '<div style="color:var(--muted);font-size:13px">Không có dữ liệu</div>';
+}
+
+// Chart 2 — Bar horizontal top categories
+function renderChart2() {
+  const groups = {};
+  filteredMails.forEach(m => { groups[m.group] = (groups[m.group]||0)+1; });
+  const sorted = Object.entries(groups).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const names = sorted.map(x=>x[0]);
+  const vals = sorted.map(x=>x[1]);
+  const colors = vals.map((v,i) => i===0 ? '#ef4444' : '#7c3aed');
+  const dom = document.getElementById('chart2');
+  if (!charts.c2) charts.c2 = echarts.init(dom, null, {renderer:'canvas'});
+  charts.c2.setOption({
+    backgroundColor:'transparent',
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#111827',borderColor:'rgba(255,255,255,0.1)',textStyle:{color:'#e2e8f0'}},
+    grid:{left:100,right:30,top:10,bottom:30},
+    xAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(255,255,255,0.05)'}},axisLabel:{color:'#64748b',fontSize:11}},
+    yAxis:{type:'category',data:names.slice().reverse(),axisLabel:{color:'#cbd5e1',fontSize:11}},
+    series:[{type:'bar',data:vals.slice().reverse(),barMaxWidth:18,
+      itemStyle:{borderRadius:4,color:params=>colors[vals.length-1-params.dataIndex]||'#7c3aed'},
+      label:{show:true,position:'right',color:'#94a3b8',fontSize:10}}]
+  });
+}
+
+// Chart 3 — Heatmap Calendar
+function renderChart3() {
+  const counts = {};
+  allMails.forEach(m => { if (m.date) counts[m.date] = (counts[m.date]||0)+1; });
+  const dates = Object.keys(counts).sort();
+  if (!dates.length) { document.getElementById('chart3').innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px">Không có dữ liệu ngày</div>'; return; }
+  const endDate = dates[dates.length-1];
+  const startD = new Date(endDate);
+  startD.setMonth(startD.getMonth()-2);
+  startD.setDate(1);
+  const startDate = startD.toISOString().split('T')[0];
+  const data = Object.entries(counts).filter(([d])=>d>=startDate).map(([d,v])=>[d,v]);
+  const max = Math.max(...data.map(x=>x[1]),1);
+  const dom = document.getElementById('chart3');
+  if (!charts.c3) charts.c3 = echarts.init(dom, null, {renderer:'canvas'});
+  charts.c3.setOption({
+    backgroundColor:'transparent',
+    tooltip:{formatter:p=>`${p.data[0]}: <b>${p.data[1]} mail</b>`,backgroundColor:'#111827',borderColor:'rgba(255,255,255,0.1)',textStyle:{color:'#e2e8f0'}},
+    visualMap:{min:0,max,show:false,inRange:{color:['rgba(124,58,237,0.1)','rgba(124,58,237,0.4)','#7c3aed','#00d4ff']}},
+    calendar:{top:20,left:30,right:10,bottom:20,range:[startDate,endDate],cellSize:['auto',18],
+      itemStyle:{borderColor:'rgba(255,255,255,0.04)',borderWidth:2},
+      dayLabel:{color:'#64748b',fontSize:10},
+      monthLabel:{color:'#94a3b8',fontSize:10},
+      yearLabel:{color:'#64748b',fontSize:10},
+      splitLine:{lineStyle:{color:'rgba(255,255,255,0.04)'}}},
+    series:[{type:'heatmap',coordinateSystem:'calendar',data}]
+  });
+  charts.c3.off('click');
+  charts.c3.on('click', p => {
+    if (!p.data) return;
+    const d = p.data[0];
+    heatmapDateFilter = heatmapDateFilter === d ? null : d;
+    onFilterChange();
+  });
+}
+
+// Chart 4 — Stacked Bar by group
+function renderChart4() {
+  const statuses = ['Chưa xử lý','Đang xử lý','Cần phản hồi','Đã lưu hồ sơ','Đã đóng'];
+  const statusColors = ['#64748b','#fbbf24','#ef4444','#10b981','#7c3aed'];
+  const groupSet = [...new Set(filteredMails.map(m=>m.group))].slice(0,8);
+  const series = statuses.map((st,i) => ({
+    name:st, type:'bar', stack:'total', barMaxWidth:28,
+    itemStyle:{color:statusColors[i],borderRadius:i===statuses.length-1?[4,4,0,0]:0},
+    data: groupSet.map(g => filteredMails.filter(m=>m.group===g&&m.status===st).length)
+  }));
+  const dom = document.getElementById('chart4');
+  if (!charts.c4) charts.c4 = echarts.init(dom, null, {renderer:'canvas'});
+  charts.c4.setOption({
+    backgroundColor:'transparent',
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#111827',borderColor:'rgba(255,255,255,0.1)',textStyle:{color:'#e2e8f0'}},
+    legend:{bottom:0,textStyle:{color:'#64748b',fontSize:10},itemWidth:10,itemHeight:10},
+    grid:{left:10,right:10,top:10,bottom:60,containLabel:true},
+    xAxis:{type:'category',data:groupSet,axisLabel:{color:'#64748b',fontSize:10,rotate:20,interval:0}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(255,255,255,0.05)'}},axisLabel:{color:'#64748b',fontSize:10}},
+    series
+  });
+}
+
+// Chart 5 — Area chart trend
+function renderChart5() {
+  const dayMap = {};
+  filteredMails.forEach(m => { if (m.date) dayMap[m.date] = (dayMap[m.date]||0)+1; });
+  const days = Object.keys(dayMap).sort();
+  const vals = days.map(d=>dayMap[d]);
+  if (!days.length) return;
+  const mean = vals.reduce((a,b)=>a+b,0)/vals.length;
+  const std = Math.sqrt(vals.map(v=>(v-mean)**2).reduce((a,b)=>a+b,0)/vals.length);
+  const markPoints = vals.map((v,i)=>v>mean+1.5*std?{coord:[days[i],v],symbol:'circle',symbolSize:8,itemStyle:{color:'#ef4444'}}:null).filter(Boolean);
+  const dom = document.getElementById('chart5');
+  if (!charts.c5) charts.c5 = echarts.init(dom, null, {renderer:'canvas'});
+  charts.c5.setOption({
+    backgroundColor:'transparent',
+    tooltip:{trigger:'axis',backgroundColor:'#111827',borderColor:'rgba(255,255,255,0.1)',textStyle:{color:'#e2e8f0'}},
+    grid:{left:10,right:10,top:20,bottom:40,containLabel:true},
+    xAxis:{type:'category',data:days,axisLabel:{color:'#64748b',fontSize:10,rotate:30},boundaryGap:false},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(255,255,255,0.05)'}},axisLabel:{color:'#64748b',fontSize:10}},
+    series:[{
+      type:'line',data:vals,smooth:true,
+      lineStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#7c3aed'},{offset:1,color:'#00d4ff'}]),width:2},
+      areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(0,212,255,0.2)'},{offset:1,color:'rgba(0,212,255,0)'}])},
+      itemStyle:{color:'#00d4ff'},
+      symbol:'circle',symbolSize:4,
+      markPoint:{data:markPoints}
+    }]
+  });
+}
+
+// Chart 6 — Pareto
+function renderChart6() {
+  const groups = {};
+  filteredMails.forEach(m => { groups[m.group]=(groups[m.group]||0)+1; });
+  const sorted = Object.entries(groups).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const names = sorted.map(x=>x[0]);
+  const vals = sorted.map(x=>x[1]);
+  const total = vals.reduce((a,b)=>a+b,0)||1;
+  let cum = 0;
+  const cumPct = vals.map(v => { cum+=v; return Math.round(cum/total*100); });
+  const dom = document.getElementById('chart6');
+  if (!charts.c6) charts.c6 = echarts.init(dom, null, {renderer:'canvas'});
+  charts.c6.setOption({
+    backgroundColor:'transparent',
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#111827',borderColor:'rgba(255,255,255,0.1)',textStyle:{color:'#e2e8f0'}},
+    legend:{bottom:0,textStyle:{color:'#64748b',fontSize:10}},
+    grid:{left:10,right:50,top:20,bottom:60,containLabel:true},
+    xAxis:{type:'category',data:names,axisLabel:{color:'#64748b',fontSize:10,rotate:20,interval:0}},
+    yAxis:[
+      {type:'value',splitLine:{lineStyle:{color:'rgba(255,255,255,0.05)'}},axisLabel:{color:'#64748b',fontSize:10}},
+      {type:'value',min:0,max:100,axisLabel:{color:'#64748b',fontSize:10,formatter:'{value}%'},splitLine:{show:false}}
+    ],
+    series:[
+      {name:'Số mail',type:'bar',barMaxWidth:28,data:vals,itemStyle:{color:'#7c3aed',borderRadius:[4,4,0,0]}},
+      {name:'% lũy kế',type:'line',yAxisIndex:1,data:cumPct,smooth:true,
+        lineStyle:{color:'#00d4ff',width:2},itemStyle:{color:'#00d4ff'},symbol:'circle',symbolSize:5,
+        markLine:{data:[{yAxis:80}],lineStyle:{color:'#fbbf24',type:'dashed'},label:{formatter:'80%',color:'#fbbf24',fontSize:10}}}
+    ]
+  });
+}
+
+// Chart 7 — Scatter Issue Matrix
+function renderChart7() {
+  const issueData = [
+    {name:'Mái',x:4,y:4},{name:'Kết cấu thép',x:5,y:5},{name:'Quan trắc',x:3,y:3},
+    {name:'Hồ sơ hợp đồng',x:4,y:2},{name:'Bản vẽ shop',x:5,y:4},{name:'Vật tư',x:2,y:3},
+    {name:'QA/QC',x:3,y:4},{name:'Sản xuất',x:2,y:2},{name:'Facade',x:4,y:3},{name:'Tiến độ',x:3,y:5},
+  ];
+  // Overlay with actual filtered counts
+  const gcounts = {};
+  filteredMails.forEach(m => { gcounts[m.group]=(gcounts[m.group]||0)+1; });
+  const data = issueData.map(d => [d.x, d.y, gcounts[d.name]||0, d.name]);
+  const dom = document.getElementById('chart7');
+  if (!charts.c7) charts.c7 = echarts.init(dom, null, {renderer:'canvas'});
+  charts.c7.setOption({
+    backgroundColor:'transparent',
+    tooltip:{formatter:p=>`<b>${p.data[3]}</b><br/>Ảnh hưởng: ${p.data[0]}<br/>Tần suất: ${p.data[1]}<br/>Mail: ${p.data[2]}`,backgroundColor:'#111827',borderColor:'rgba(255,255,255,0.1)',textStyle:{color:'#e2e8f0'}},
+    grid:{left:40,right:10,top:20,bottom:40},
+    xAxis:{type:'value',min:0,max:6,name:'Mức ảnh hưởng',nameLocation:'end',splitLine:{lineStyle:{color:'rgba(255,255,255,0.05)'}},axisLabel:{color:'#64748b',fontSize:10},nameTextStyle:{color:'#64748b',fontSize:10}},
+    yAxis:{type:'value',min:0,max:6,name:'Tần suất',nameLocation:'end',splitLine:{lineStyle:{color:'rgba(255,255,255,0.05)'}},axisLabel:{color:'#64748b',fontSize:10},nameTextStyle:{color:'#64748b',fontSize:10}},
+    markArea:{silent:true,data:[
+      [{name:'Ưu tiên xử lý ngay',itemStyle:{color:'rgba(239,68,68,0.07)'},coord:[3,3]},{coord:[6,6]}],
+      [{name:'Theo dõi sát',itemStyle:{color:'rgba(251,191,36,0.07)'},coord:[0,3]},{coord:[3,6]}],
+      [{name:'Chuẩn hóa quy trình',itemStyle:{color:'rgba(0,212,255,0.06)'},coord:[3,0]},{coord:[6,3]}],
+      [{name:'Lưu hồ sơ',itemStyle:{color:'rgba(16,185,129,0.05)'},coord:[0,0]},{coord:[3,3]}],
+    ]},
+    series:[{type:'scatter',data,
+      symbolSize:p=>(p[2]||1)*4+10,
+      itemStyle:{color:p=>p.data[0]>3&&p.data[1]>3?'#ef4444':p.data[0]>3?'#fbbf24':p.data[1]>3?'#00d4ff':'#10b981',opacity:.8},
+      label:{show:true,formatter:p=>p.data[3],position:'top',color:'#94a3b8',fontSize:9}}]
+  });
+}
+
+// Chart 8 — Rework Table
+const DRAW_KEYWORDS = /bản vẽ|shop|zone|khu vực|drawing|\bbv\b|\bbd\b|section|detail/i;
+let reworkData = [];
+function renderReworkTable() {
+  const tracker = {};
+  filteredMails.forEach(m => {
+    if (!DRAW_KEYWORDS.test(m.title+m.summary)) return;
+    const key = m.group + (m.title.match(/Zone\s?\w+|Khu\s?\w+/i)||[''])[0];
+    if (!tracker[key]) tracker[key] = {name:key, count:0, last:'', status:m.status, priority:m.priority};
+    tracker[key].count++;
+    if (!tracker[key].last || m.date > tracker[key].last) {
+      tracker[key].last = m.date;
+      tracker[key].status = m.status;
+      tracker[key].priority = m.priority;
+    }
+  });
+  reworkData = Object.values(tracker);
+  sortAndRenderRework();
+}
+
+function sortRework(key) {
+  if (reworkSortKey === key) reworkSortDir *= -1;
+  else { reworkSortKey = key; reworkSortDir = -1; }
+  sortAndRenderRework();
+}
+
+function sortAndRenderRework() {
+  const sorted = [...reworkData].sort((a,b) => {
+    const av = a[reworkSortKey]||'', bv = b[reworkSortKey]||'';
+    return typeof av==='number' ? (av-bv)*reworkSortDir : av.localeCompare(bv)*reworkSortDir;
+  });
+  const tbody = document.getElementById('reworkBody');
+  if (!sorted.length) { tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Không có dữ liệu bản vẽ</td></tr>'; return; }
+  tbody.innerHTML = sorted.map(r => {
+    const last = r.last ? r.last.split('-').reverse().join('/') : '—';
+    return `<tr>
+      <td>${escHtml(r.name)}</td>
+      <td><b style="color:var(--cyan)">${r.count}</b></td>
+      <td>${last}</td>
+      <td><span class="status-pill ${statusClass(r.status)}">${r.status}</span></td>
+      <td><span class="priority-badge ${priorityClass(r.priority)}">${r.priority}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// =============================================
+// UTILITIES
+// =============================================
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) {
+  return String(s||'').replace(/'/g,'\\x27').replace(/\n/g,' ').substring(0,300);
+}
+function showLoading(msg) {
+  document.getElementById('loadingText').textContent = msg||'Đang tải...';
+  document.getElementById('loadingOverlay').style.display = 'flex';
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(()=>showToast('Đã sao chép vào clipboard!')).catch(()=>{
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('Đã sao chép!');
+  });
+}
+
+// resize charts on window resize
+window.addEventListener('resize', () => {
+  Object.values(charts).forEach(c => { try{ c.resize(); }catch(e){} });
+});
+
+// keyboard close modal
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
+
+// =============================================
+// BOOT
+// =============================================
+loadData();
+</script>
+</body>
+</html>
